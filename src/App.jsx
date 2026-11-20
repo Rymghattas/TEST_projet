@@ -6,7 +6,7 @@ import OfferDetailsPage from './pages/OfferDetailsPage'
 import DevelopersPage from './pages/DevelopersPage'
 import DeveloperProfilePage from './pages/DeveloperProfilePage'
 import ApplicationsPage from './pages/ApplicationsPage'
-import { LoginPage, RegisterPage } from './pages/AuthPages'
+import { ForgotPasswordPage, LoginPage, RegisterPage } from './pages/AuthPages'
 
 function NotFound() {
   return <div className="container page-shell empty-state"><h2>Page introuvable</h2><a href="/">Retour à l'accueil</a></div>
@@ -23,6 +23,7 @@ export default function App() {
         <Route path="/developers/:id" element={<DeveloperProfilePage/>}/>
         <Route path="/applications/received" element={<ApplicationsPage/>}/>
         <Route path="/login" element={<LoginPage/>}/>
+        <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
         <Route path="/register" element={<RegisterPage/>}/>
         <Route path="*" element={<NotFound/>}/>
       </Routes>
