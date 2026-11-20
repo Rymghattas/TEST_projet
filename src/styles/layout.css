@@ -1,0 +1,22 @@
+/* Navigation and footer */
+.site-header { height: 76px; background: rgba(255,255,255,.92); border-bottom: 1px solid rgba(232,229,244,.75); position: sticky; top: 0; z-index: 20; backdrop-filter: blur(14px); }
+.nav-wrap { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 25px; }
+.brand { display: inline-flex; align-items: center; gap: 9px; font: 800 19px Manrope,sans-serif; letter-spacing: -.8px; color: #211b68; white-space: nowrap; }
+.brand > span:last-child > span { color: #5d2bd2; }
+.brand-mark { width: 34px; height: 34px; border-radius: 11px 11px 11px 3px; background: linear-gradient(145deg,#7448e7,#3420a0); color: #fff; display: grid; place-items: center; font: 800 23px Manrope; transform: skew(-5deg); box-shadow: 0 5px 12px #5d2bd233; }
+.nav-links { display: flex; align-items: center; gap: 27px; }
+.nav-links a { color: #4e4c6b; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+.nav-links a.active, .nav-links a:hover { color: var(--purple); }
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+.mobile-menu { display: none; }
+.footer { border-top: 1px solid var(--line); padding: 34px 0 18px; background: linear-gradient(180deg,#fff,#fbfaff); }
+.footer-main { display: flex; justify-content: space-between; align-items: center; gap: 25px; padding-bottom: 27px; }
+.footer-brand { font-size: 21px; }
+.footer-main p { margin: 7px 0 0 44px; color: var(--muted); font-size: 11px; }
+.footer-links, .socials { display: flex; align-items: center; gap: 23px; }
+.footer-links a { color: #666681; font-size: 11px; font-weight: 600; }
+.socials { gap: 10px; }
+.socials a { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #f1effb; color: #33217e; }
+.socials svg { width: 15px; }
+.footer-bottom { display: flex; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 15px; color: #9291a7; font-size: 10px; }
+.footer-bottom span:last-child { display: flex; align-items: center; gap: 4px; }
