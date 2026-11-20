@@ -4,12 +4,111 @@ import { Mail, Lock, User, Building2, ArrowLeft } from 'lucide-react'
 
 const technologies = ['Python', 'Java', 'C', 'R', 'PHP', 'C++', 'JavaScript', 'TypeScript', 'C#', 'Go', 'Autre']
 
+const requiredFieldsByRole = {
+  Développeur: ['fullName', 'email', 'password', 'passwordConfirmation', 'birthDate', 'phone', 'technologies'],
+  Organisation: ['organizationName', 'email', 'password', 'passwordConfirmation'],
+}
+
+function validateRegistrationField(name, value, form, role) {
+  const isRequired = requiredFieldsByRole[role].includes(name)
+  const normalizedValue = typeof value === 'string' ? value.trim() : value
+
+  if (isRequired && (Array.isArray(value) ? value.length === 0 : !normalizedValue)) {
+    return 'Ce champ est obligatoire.'
+  }
+  if (!normalizedValue) return ''
+
+  if (name === 'fullName' || name === 'organizationName') {
+    return normalizedValue.length < 2 ? 'Saisissez au moins 2 caractères.' : ''
+  }
+  if (name === 'education') {
+    if (normalizedValue.length < 2) return 'Saisissez au moins 2 caractères.'
+    return normalizedValue.length <= 100 ? '' : 'Limitez le niveau d’étude à 100 caractères.'
+  }
+  if (name === 'experience') {
+    if (normalizedValue.length < 10) return 'Décrivez votre expérience en au moins 10 caractères.'
+    return normalizedValue.length <= 2000 ? '' : 'Limitez la description à 2 000 caractères.'
+  }
+  if (name === 'email') {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedValue) ? '' : 'Saisissez une adresse e-mail valide.'
+  }
+  if (name === 'password') {
+    return /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(value)
+      ? ''
+      : 'Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre.'
+  }
+  if (name === 'passwordConfirmation') {
+    return value === form.password ? '' : 'Les mots de passe ne correspondent pas.'
+  }
+  if (name === 'birthDate') {
+    const today = new Date()
+    const localToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+    return value <= localToday ? '' : 'La date de naissance ne peut pas être dans le futur.'
+  }
+  if (name === 'phone') {
+    return /^\d{8}$/.test(value.replace(/[\s().-]/g, ''))
+      ? ''
+      : 'Saisissez un numéro tunisien de 8 chiffres.'
+  }
+  if (['website', 'linkedin', 'github'].includes(name)) {
+    try {
+      const url = new URL(value)
+      return ['http:', 'https:'].includes(url.protocol) ? '' : 'Le lien doit commencer par http:// ou https://.'
+    } catch {
+      return 'Saisissez une URL valide (ex. https://exemple.com).'
+    }
+  }
+  if (name === 'cv') {
+    const validExtension = /\.(pdf|doc|docx)$/i.test(value.name)
+    if (!validExtension) return 'Le CV doit être au format PDF, DOC ou DOCX.'
+    if (value.size > 5 * 1024 * 1024) return 'Le CV ne doit pas dépasser 5 Mo.'
+  }
+  return ''
+}
+
 export function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
+  const [errors, setErrors] = useState({})
 
-  return <div className="container auth-shell"><div className="auth-card"><span className="eyebrow">BON RETOUR</span><h1>Connectez-vous.</h1><p>Retrouvez votre espace DevOnDeck.</p><form onSubmit={e => { e.preventDefault(); setMessage('Connexion de démonstration : le backend Spring Boot sera connecté ensuite.') }}><label>Email<div className="input-wrap"><Mail/><input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="vous@exemple.com"/></div></label><label>Mot de passe<div className="input-wrap"><Lock/><input type="password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="Votre mot de passe"/></div></label><Link className="auth-forgot-link" to="/forgot-password">Mot de passe oublié ?</Link><button className="btn btn-primary full-width">Se connecter</button></form>{message && <p className="form-message">{message}</p>}<p className="auth-switch">Pas encore de compte ? <Link to="/register">Créer un compte</Link></p></div></div>
+  const handleLogin = e => {
+    e.preventDefault()
+    const nextErrors = {}
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      nextErrors.email = 'Saisissez une adresse e-mail valide.'
+    }
+    if (!password) {
+      nextErrors.password = 'Le mot de passe est obligatoire.'
+    }
+    setErrors(nextErrors)
+    if (Object.keys(nextErrors).length) return
+    setMessage('Connexion de démonstration : le backend Spring Boot sera connecté ensuite.')
+  }
+
+  return (
+    <div className="container auth-shell">
+      <div className="auth-card">
+        <span className="eyebrow">BON RETOUR</span>
+        <h1>Connectez-vous.</h1>
+        <p>Retrouvez votre espace DevOnDeck.</p>
+        <form noValidate onSubmit={handleLogin}>
+          <label>Email
+            <div className="input-wrap"><Mail/><input type="email" required value={email} onChange={e => { setEmail(e.target.value); setErrors(current => ({ ...current, email: '' })) }} placeholder="vous@exemple.com" aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'login-email-error' : undefined}/></div>
+            {errors.email && <span className="field-error" id="login-email-error" role="alert">{errors.email}</span>}
+          </label>
+          <label>Mot de passe
+            <div className="input-wrap"><Lock/><input type="password" required value={password} onChange={e => { setPassword(e.target.value); setErrors(current => ({ ...current, password: '' })) }} placeholder="Votre mot de passe" aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'login-password-error' : undefined}/></div>
+            {errors.password && <span className="field-error" id="login-password-error" role="alert">{errors.password}</span>}
+          </label>
+          <Link className="auth-forgot-link" to="/forgot-password">Mot de passe oublié ?</Link>
+          <button className="btn btn-primary full-width">Se connecter</button>
+        </form>
+        {message && <p className="form-message">{message}</p>}
+        <p className="auth-switch">Pas encore de compte ? <Link to="/register">Créer un compte</Link></p>
+      </div>
+    </div>
+  )
 }
 
 export function ForgotPasswordPage() {
@@ -43,17 +142,46 @@ export function RegisterPage() {
   const [step, setStep] = useState(1)
   const [message, setMessage] = useState('')
   const [form, setForm] = useState({})
+  const [errors, setErrors] = useState({})
 
   const updateField = (name, value) => {
-    setForm(current => ({ ...current, [name]: value }))
+    const nextForm = { ...form, [name]: value }
+    setForm(nextForm)
+    if (errors[name]) {
+      setErrors(current => ({ ...current, [name]: validateRegistrationField(name, value, nextForm, role) }))
+    }
   }
 
-  const renderField = (label, name, placeholder, type = 'text') => (
-    <label key={name}>{label}<input type={type} value={form[name] || ''} onChange={e => updateField(name, e.target.value)} placeholder={placeholder}/></label>
-  )
+  const validateFields = names => {
+    const nextErrors = {}
+    names.forEach(name => {
+      const error = validateRegistrationField(name, form[name], form, role)
+      if (error) nextErrors[name] = error
+    })
+    setErrors(current => ({ ...current, ...nextErrors, ...Object.fromEntries(names.filter(name => !nextErrors[name]).map(name => [name, ''])) }))
+    return Object.keys(nextErrors).length === 0
+  }
+
+  const renderField = (label, name, placeholder, type = 'text') => {
+    const errorId = `${name}-error`
+    return (
+      <label key={name}>{label}
+        <input
+          type={type}
+          value={form[name] || ''}
+          onChange={e => updateField(name, e.target.value)}
+          placeholder={placeholder}
+          required={requiredFieldsByRole[role].includes(name)}
+          aria-invalid={Boolean(errors[name])}
+          aria-describedby={errors[name] ? errorId : undefined}
+        />
+        {errors[name] && <span className="field-error" id={errorId} role="alert">{errors[name]}</span>}
+      </label>
+    )
+  }
 
   const renderTechnologies = () => (
-    <fieldset className="preference-field">
+    <fieldset className="preference-field" aria-invalid={Boolean(errors.technologies)} aria-describedby={errors.technologies ? 'technologies-error' : undefined}>
       <legend>Langages de programmation préférés</legend>
       <div className="preference-options">
         {technologies.map(technology => (
@@ -72,17 +200,23 @@ export function RegisterPage() {
           </label>
         ))}
       </div>
+      {errors.technologies && <span className="field-error" id="technologies-error" role="alert">{errors.technologies}</span>}
     </fieldset>
   )
 
   const renderPhone = () => (
     <label>Numéro de téléphone
-      <div className="phone-input"><span>+216</span><input type="tel" value={form.phone || ''} onChange={e => updateField('phone', e.target.value)} placeholder="12 345 678"/></div>
+      <div className="phone-input"><span>+216</span><input type="tel" value={form.phone || ''} onChange={e => updateField('phone', e.target.value)} placeholder="12 345 678" required={requiredFieldsByRole[role].includes('phone')} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? 'phone-error' : undefined}/></div>
+      {errors.phone && <span className="field-error" id="phone-error" role="alert">{errors.phone}</span>}
     </label>
   )
 
   const finishRegistration = e => {
     e.preventDefault()
+    const fields = role === 'Développeur'
+      ? ['education', 'experience', 'linkedin', 'github', 'cv']
+      : ['organizationName', 'email', 'password', 'passwordConfirmation', 'website', 'phone']
+    if (!validateFields(fields)) return
     setMessage('Inscription de démonstration. La création réelle du compte sera gérée par Spring Boot.')
   }
 
@@ -90,6 +224,7 @@ export function RegisterPage() {
     setRole(selectedRole)
     setStep(1)
     setMessage('')
+    setErrors({})
   }
 
   return (
@@ -107,9 +242,9 @@ export function RegisterPage() {
           <>
             <div className="register-progress">Étape {step} sur 2 <span>{step === 1 ? 'Informations principales' : 'Profil complémentaire (facultatif)'}</span></div>
             {step === 1 ? (
-              <form onSubmit={e => { e.preventDefault(); setStep(2); setMessage('') }}>
+              <form noValidate onSubmit={e => { e.preventDefault(); if (validateFields(requiredFieldsByRole[role])) { setStep(2); setMessage('') } }}>
                 {renderField('Nom complet', 'fullName', 'Votre nom et prénom')}
-                {renderField('Email', 'email', 'vous@exemple.com')}
+                {renderField('Email', 'email', 'vous@exemple.com', 'email')}
                 {renderField('Mot de passe', 'password', 'Votre mot de passe', 'password')}
                 {renderField('Confirmer le mot de passe', 'passwordConfirmation', 'Confirmez votre mot de passe', 'password')}
                 {renderField('Date de naissance', 'birthDate', '', 'date')}
@@ -118,13 +253,13 @@ export function RegisterPage() {
                 <button className="btn btn-primary full-width">Suivant</button>
               </form>
             ) : (
-              <form onSubmit={finishRegistration}>
+              <form noValidate onSubmit={finishRegistration}>
                 {renderField('Bio', 'bio', 'Présentez-vous en quelques mots')}
                 {renderField('Niveau d’étude', 'education', 'Ex. Licence, Master, autodidacte')}
-                <label>Expériences<textarea value={form.experience || ''} onChange={e => updateField('experience', e.target.value)} placeholder="Décrivez vos expériences professionnelles"/></label>
-                <label>CV<input type="file" accept=".pdf,.doc,.docx"/></label>
-                {renderField('Lien LinkedIn', 'linkedin', 'https://linkedin.com/in/...')}
-                {renderField('Lien GitHub', 'github', 'https://github.com/...')}
+                <label>Expériences<textarea value={form.experience || ''} onChange={e => updateField('experience', e.target.value)} placeholder="Décrivez vos expériences professionnelles" maxLength={2000} aria-invalid={Boolean(errors.experience)} aria-describedby={errors.experience ? 'experience-error' : undefined}/>{errors.experience && <span className="field-error" id="experience-error" role="alert">{errors.experience}</span>}</label>
+                <label>CV<input type="file" accept=".pdf,.doc,.docx" onChange={e => updateField('cv', e.target.files[0] || '')} aria-invalid={Boolean(errors.cv)} aria-describedby={errors.cv ? 'cv-error' : undefined}/>{errors.cv && <span className="field-error" id="cv-error" role="alert">{errors.cv}</span>}</label>
+                {renderField('Lien LinkedIn', 'linkedin', 'https://linkedin.com/in/...', 'url')}
+                {renderField('Lien GitHub', 'github', 'https://github.com/...', 'url')}
                 {renderField('Frameworks préférés', 'frameworks', 'Ex. React, Spring Boot, Django')}
                 <div className="register-actions">
                   <button type="button" className="btn btn-secondary" onClick={() => setStep(1)}><ArrowLeft size={15}/> Précédent</button>
@@ -134,12 +269,12 @@ export function RegisterPage() {
             )}
           </>
         ) : (
-          <form onSubmit={finishRegistration}>
+          <form noValidate onSubmit={finishRegistration}>
             {renderField("Nom de l'organisation", 'organizationName', 'Nom de votre organisation')}
-            {renderField('Email professionnel', 'email', 'contact@organisation.com')}
+            {renderField('Email professionnel', 'email', 'contact@organisation.com', 'email')}
             {renderField('Mot de passe', 'password', 'Votre mot de passe', 'password')}
             {renderField('Confirmer le mot de passe', 'passwordConfirmation', 'Confirmez votre mot de passe', 'password')}
-            {renderField('Site web', 'website', 'https://www.organisation.com')}
+            {renderField('Site web', 'website', 'https://www.organisation.com', 'url')}
             <div className="form-grid">
               {renderField('Ville', 'city', 'Ex. Tunis')}
               {renderField('Pays', 'country', 'Ex. Tunisie')}
