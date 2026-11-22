@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Building2, Globe, Mail, MapPin, Phone } from 'lucide-react'
 import { organizations } from '../data/mockData'
 
-export default function OrganizationProfilePage() {
+export default function ProfilPublicOrganisationPage() {
   const { id } = useParams()
   const organization = organizations.find(item => item.id === Number(id))
 

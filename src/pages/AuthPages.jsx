@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Mail, Lock, User, Building2, ArrowLeft } from 'lucide-react'
+import { createOrganization } from '../services/organisationService'
 
 const technologies = ['Python', 'Java', 'C', 'R', 'PHP', 'C++', 'JavaScript', 'TypeScript', 'C#', 'Go', 'Autre']
 
@@ -142,9 +143,12 @@ export function ForgotPasswordPage() {
 }
 
 export function RegisterPage() {
+  const navigate = useNavigate()
   const [role, setRole] = useState('Développeur')
   const [step, setStep] = useState(1)
   const [message, setMessage] = useState('')
+  const [requestError, setRequestError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const [form, setForm] = useState({})
   const [errors, setErrors] = useState({})
 
@@ -215,12 +219,45 @@ export function RegisterPage() {
     </label>
   )
 
-  const finishRegistration = e => {
+  const finishRegistration = async e => {
     e.preventDefault()
     const fields = role === 'Développeur'
       ? ['education', 'experience', 'linkedin', 'github', 'cv']
       : [...requiredFieldsByRole.Organisation, 'website']
     if (!validateFields(fields)) return
+
+    if (role === 'Organisation') {
+      setSubmitting(true)
+      setRequestError('')
+      setMessage('')
+
+      try {
+        const result = await createOrganization({
+          name: form.organizationName.trim(),
+          email: form.email.trim(),
+          password: form.password,
+          description: form.description.trim(),
+          sector: form.sector,
+          website: form.website?.trim() || '',
+          address: form.address.trim(),
+          phone: `+216 ${form.phone.trim()}`,
+          role: 'ORGANIZATION',
+        })
+        const token = result?.token || result?.accessToken
+        if (token) {
+          window.localStorage.setItem('token', token)
+          navigate('/organization/profile')
+        } else {
+          setMessage('Compte organisation créé. Connectez-vous pour accéder à votre profil et le modifier.')
+        }
+      } catch (error) {
+        setRequestError(error.message || 'Impossible de créer le compte organisation.')
+      } finally {
+        setSubmitting(false)
+      }
+      return
+    }
+
     setMessage('Inscription de démonstration. La création réelle du compte sera gérée par Spring Boot.')
   }
 
@@ -228,6 +265,7 @@ export function RegisterPage() {
     setRole(selectedRole)
     setStep(1)
     setMessage('')
+    setRequestError('')
     setErrors({})
   }
 
@@ -311,11 +349,14 @@ export function RegisterPage() {
               />
               {errors.description && <span className="field-error" id="description-error" role="alert">{errors.description}</span>}
             </label>
-            <button className="btn btn-primary full-width">Créer mon compte</button>
+            <button className="btn btn-primary full-width" disabled={submitting}>
+              {submitting ? 'Création du compte...' : 'Créer mon compte'}
+            </button>
           </form>
         )}
 
         {message && <p className="form-message">{message}</p>}
+        {requestError && <p className="field-error" role="alert">{requestError}</p>}
         <p className="auth-switch">Déjà inscrit ? <Link to="/login">Se connecter</Link></p>
       </div>
     </div>
