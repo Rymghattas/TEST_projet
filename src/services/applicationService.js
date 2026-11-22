@@ -1,5 +1,7 @@
 import { apiRequest } from './api'
 
+export const getMyApplications = () => apiRequest('/applications/my')
+
 export const submitApplication = (offerId) =>
   apiRequest(`/applications`, { method: 'POST', body: JSON.stringify({ offerId }) })
 

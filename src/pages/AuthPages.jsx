@@ -6,7 +6,7 @@ const technologies = ['Python', 'Java', 'C', 'R', 'PHP', 'C++', 'JavaScript', 'T
 
 const requiredFieldsByRole = {
   Développeur: ['fullName', 'email', 'password', 'passwordConfirmation', 'birthDate', 'phone', 'technologies'],
-  Organisation: ['organizationName', 'email', 'password', 'passwordConfirmation'],
+  Organisation: ['organizationName', 'email', 'password', 'passwordConfirmation', 'phone', 'sector', 'address', 'description'],
 }
 
 function validateRegistrationField(name, value, form, role) {
@@ -27,6 +27,10 @@ function validateRegistrationField(name, value, form, role) {
   }
   if (name === 'experience') {
     if (normalizedValue.length < 10) return 'Décrivez votre expérience en au moins 10 caractères.'
+    return normalizedValue.length <= 2000 ? '' : 'Limitez la description à 2 000 caractères.'
+  }
+  if (name === 'description') {
+    if (normalizedValue.length < 10) return 'La description doit contenir au moins 10 caractères.'
     return normalizedValue.length <= 2000 ? '' : 'Limitez la description à 2 000 caractères.'
   }
   if (name === 'email') {
@@ -215,7 +219,7 @@ export function RegisterPage() {
     e.preventDefault()
     const fields = role === 'Développeur'
       ? ['education', 'experience', 'linkedin', 'github', 'cv']
-      : ['organizationName', 'email', 'password', 'passwordConfirmation', 'website', 'phone']
+      : [...requiredFieldsByRole.Organisation, 'website']
     if (!validateFields(fields)) return
     setMessage('Inscription de démonstration. La création réelle du compte sera gérée par Spring Boot.')
   }
@@ -275,14 +279,38 @@ export function RegisterPage() {
             {renderField('Mot de passe', 'password', 'Votre mot de passe', 'password')}
             {renderField('Confirmer le mot de passe', 'passwordConfirmation', 'Confirmez votre mot de passe', 'password')}
             {renderField('Site web', 'website', 'https://www.organisation.com', 'url')}
-            <div className="form-grid">
-              {renderField('Ville', 'city', 'Ex. Tunis')}
-              {renderField('Pays', 'country', 'Ex. Tunisie')}
-            </div>
             {renderPhone()}
-            {renderField("Secteur d'activité", 'sector', 'Ex. Technologies, finance')}
-            {renderField("Taille de l'organisation", 'organizationSize', 'Ex. 10–50 employés')}
-            <label>Présentation de l’organisation<textarea value={form.description || ''} onChange={e => updateField('description', e.target.value)} placeholder="Présentez votre organisation"/></label>
+            <label>Secteur d'activité
+              <select
+                value={form.sector || ''}
+                onChange={e => updateField('sector', e.target.value)}
+                required
+                aria-invalid={Boolean(errors.sector)}
+                aria-describedby={errors.sector ? 'sector-error' : undefined}
+              >
+                <option value="">Sélectionner un secteur</option>
+                <option value="Informatique">Informatique</option>
+                <option value="Finance">Finance</option>
+                <option value="Education">Éducation</option>
+                <option value="Industrie">Industrie</option>
+                <option value="Commerce">Commerce</option>
+                <option value="Autre">Autre</option>
+              </select>
+              {errors.sector && <span className="field-error" id="sector-error" role="alert">{errors.sector}</span>}
+            </label>
+            {renderField('Adresse', 'address', 'Adresse de l’organisation')}
+            <label>Description de l’organisation
+              <textarea
+                value={form.description || ''}
+                onChange={e => updateField('description', e.target.value)}
+                placeholder="Présentez votre organisation..."
+                maxLength={2000}
+                required
+                aria-invalid={Boolean(errors.description)}
+                aria-describedby={errors.description ? 'description-error' : undefined}
+              />
+              {errors.description && <span className="field-error" id="description-error" role="alert">{errors.description}</span>}
+            </label>
             <button className="btn btn-primary full-width">Créer mon compte</button>
           </form>
         )}

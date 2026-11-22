@@ -14,6 +14,10 @@ export const developers = [
   { id: 4, name: 'Omar Khelifi', role: 'Backend Developer', city: 'Tunis', level: 'Confirmé', bio: 'Spécialisé dans les API, les bases de données et les systèmes distribués.', skills: ['Java', 'Spring Boot', 'PostgreSQL'], initials: 'OK', rating: '4.7' },
 ]
 
+export const organizations = [
+  { id: 1, name: 'TechNova', sector: 'Informatique', email: 'contact@technova.example', website: 'https://technova.example', address: 'Tunis, Tunisie', phone: '+216 70 000 000', description: 'Organisation spécialisée dans le développement de solutions numériques et de produits web.' },
+]
+
 export const applicationsSeed = [
   { id: 101, offerId: 1, offer: 'Frontend Developer', developer: 'Amira Ben Salem', email: 'amira@example.com', date: '18 nov. 2026', status: 'En attente', skills: ['React', 'TypeScript'] },
   { id: 102, offerId: 1, offer: 'Frontend Developer', developer: 'Youssef Trabelsi', email: 'youssef@example.com', date: '17 nov. 2026', status: 'En attente', skills: ['React', 'Node.js'] },
