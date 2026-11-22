@@ -8,6 +8,7 @@ import DeveloperProfilePage from './pages/DeveloperProfilePage'
 import OrganizationProfilePage from './pages/OrganisationProfilePage'
 import ProfilPublicOrganisationPage from './pages/OrganisationPubliqueP'
 import ApplicationsPage from './pages/ApplicationsPage'
+import AdminLoginPage from './pages/AdminLoginPage'
 import { ForgotPasswordPage, LoginPage, RegisterPage } from './pages/AuthPages'
 
 function NotFound() {
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage/>}/>
         <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
         <Route path="/register" element={<RegisterPage/>}/>
+        <Route path="/admin/login" element={<AdminLoginPage/>}/>
         <Route path="*" element={<NotFound/>}/>
       </Routes>
     </Layout>
