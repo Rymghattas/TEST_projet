@@ -1,54 +1,40 @@
 
-import { useMemo, useState } from 'react';
-import { offers } from '../data/mockData';
-import OfferCard from '../components/offers/OfferCard';
-import OfferFilters from '../components/offers/OfferFilters';
+import { useMemo, useState } from 'react'
+import { offers } from '../data/mockData'
+import OfferCard from '../components/offers/OfferCard'
+import OfferFilters from '../components/offers/OfferFilters'
 
 export default function OffersPage() {
   const [filters, setFilters] = useState({
     keyword: '',
     category: 'Toutes',
     location: 'Toutes',
-    mode: 'Tous'
-  });
+    mode: 'Tous',
+    contract: 'Tous',
+    education: 'Toutes',
+    skill: 'Toutes'
+  })
 
   const filtered = useMemo(() => {
     return offers.filter(offer => {
-      const keyword = filters.keyword.toLowerCase().trim();
+      const keyword = filters.keyword.toLowerCase()
 
-      const text = `
-        ${offer.title}
-        ${offer.company}
-        ${offer.description}
-        ${(offer.tags || []).join(' ')}
-      `.toLowerCase();
-
-      const matchKeyword = text.includes(keyword);
-
-      const matchCategory =
-        filters.category === 'Toutes' ||
-        offer.category === filters.category;
-
-      const matchLocation =
-        filters.location === 'Toutes' ||
-        offer.location?.includes(filters.location);
-
-      const matchMode =
-        filters.mode === 'Tous' ||
-        offer.mode === filters.mode;
+      const text = `${offer.title} ${offer.company} ${offer.tags.join(' ')}`.toLowerCase()
 
       return (
-        matchKeyword &&
-        matchCategory &&
-        matchLocation &&
-        matchMode
-      );
-    });
-  }, [filters]);
+        text.includes(keyword) &&
+        (filters.category === 'Toutes' || offer.category === filters.category) &&
+        (filters.location === 'Toutes' || offer.location.includes(filters.location)) &&
+        (filters.mode === 'Tous' || offer.mode === filters.mode) &&
+        (filters.contract === 'Tous' || offer.contract === filters.contract) &&
+        (filters.education === 'Toutes' || offer.education === filters.education) &&
+        (filters.skill === 'Toutes' || offer.tags.includes(filters.skill))
+      )
+    })
+  }, [filters])
 
   return (
     <div className="page-shell container">
-
       <div className="page-intro">
         <span className="eyebrow">OPPORTUNITÉS</span>
         <h1>
@@ -59,10 +45,7 @@ export default function OffersPage() {
         </p>
       </div>
 
-      <OfferFilters
-        filters={filters}
-        setFilters={setFilters}
-      />
+      <OfferFilters filters={filters} setFilters={setFilters} />
 
       <div className="results-line">
         <strong>{filtered.length} opportunités</strong>
@@ -77,10 +60,9 @@ export default function OffersPage() {
 
       {filtered.length === 0 && (
         <div className="empty-state">
-          Aucune offre trouvée. Essayez un autre mot-clé.
+          Aucune offre trouvée. Essayez d'autres critères.
         </div>
       )}
-
     </div>
-  );
+  )
 }
