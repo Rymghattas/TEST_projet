@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Play, Users, Building2, BriefcaseBusiness, Zap, Rocket, Star, Search, Code2, ChartNoAxesColumnIncreasing } from 'lucide-react'
+import { ArrowRight, Play, Users, BriefcaseBusiness, Zap, Rocket, Star, Search, Code2, ChartNoAxesColumnIncreasing } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { offers } from '../data/mockData'
 import OfferCard from '../components/offers/OfferCard'
@@ -19,11 +19,6 @@ export default function HomePage() {
             <h1>Connect. Build.<br/><span>Launch.</span></h1>
             <p>Trouvez les bonnes opportunités. Valorisez vos compétences. Construisez votre avenir avec DevOnDeck.</p>
             <div className="hero-actions"><Link to="/offers" className="btn btn-primary btn-large">Explorer les opportunités <ArrowRight size={17}/></Link><a href="#about" className="story-link"><span><Play size={15} fill="currentColor"/></span><div><strong>Découvrir DevOnDeck</strong><small>Comment ça marche</small></div></a></div>
-            <div className="stats-strip">
-              <div><Users/><strong>5K+</strong><span>Développeurs</span></div><i/>
-              <div><Building2/><strong>800+</strong><span>Organisations</span></div><i/>
-              <div><BriefcaseBusiness/><strong>10K+</strong><span>Opportunités</span></div>
-            </div>
           </div>
           <div className="hero-art">
             <div className="art-orbit orbit-a"/><div className="art-orbit orbit-b"/>
