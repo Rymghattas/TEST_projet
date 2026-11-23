@@ -23,3 +23,36 @@ export const applicationsSeed = [
   { id: 102, offerId: 1, offer: 'Frontend Developer', developer: 'Youssef Trabelsi', email: 'youssef@example.com', date: '17 nov. 2026', status: 'En attente', skills: ['React', 'Node.js'] },
   { id: 103, offerId: 6, offer: 'Backend Developer', developer: 'Meriem Gharbi', email: 'meriem@example.com', date: '16 nov. 2026', status: 'Acceptée', skills: ['Java', 'SQL'] },
 ]
+
+// Profil du développeur actuellement connecté (données simulées)
+export const currentDeveloper = {
+  id: 1,
+  fullName: 'Amira Ben Salem',
+  email: 'amira.bensalem@example.com',
+  birthDate: '2002-05-15',
+  phone: '+216 12 345 678',
+  city: 'Tunis',
+  role: 'Frontend Developer',
+  education: 'Licence en informatique',
+  level: 'Junior',
+
+  bio: 'Passionnée par le développement web et la création d’interfaces modernes, accessibles et intuitives. Je souhaite développer mes compétences et participer à des projets innovants.',
+
+  experience: [
+    {
+      title: 'Stage Développement Web',
+      company: 'TechNova',
+      period: 'Juin 2025 - Août 2025',
+      description: 'Participation au développement d’interfaces web avec React et JavaScript.'
+    }
+  ],
+
+  languages: ['JavaScript', 'Python', 'Java', 'PHP', 'C++'],
+
+  frameworks: ['React', 'Bootstrap', 'Tailwind CSS'],
+
+  cv: 'CV_Amira_Ben_Salem.pdf',
+
+  linkedin: 'https://www.linkedin.com/',
+  github: 'https://github.com/'
+}
