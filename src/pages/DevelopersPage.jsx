@@ -23,7 +23,8 @@ export default function DevelopersPage() {
     setError('')
 
     try {
-      const data = await searchDevelopers(value)
+       const search = value.trim()
+       const data = await searchDevelopers(search)
 
       const results = data.map(d => ({
         ...d,
