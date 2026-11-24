@@ -1,18 +1,47 @@
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Search, RotateCcw } from 'lucide-react'
-import { developers } from '../data/mockData'
 import DeveloperCard from '../components/developers/DeveloperCard'
+import { searchDevelopers } from '../services/developerService'
 
 export default function DevelopersPage() {
   const [keyword, setKeyword] = useState('')
+  const [developers, setDevelopers] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const filtered = useMemo(() =>
-    developers.slice(0, 2).filter(d =>
-      `${d.name} ${d.role} ${d.city} ${d.skills.join(' ')}`
-        .toLowerCase()
-        .includes(keyword.toLowerCase())
-    ), [keyword])
+  async function handleSearch(value) {
+    setKeyword(value)
+
+    if (!value.trim()) {
+      setDevelopers([])
+      setError('')
+      return
+    }
+
+    setLoading(true)
+    setError('')
+
+    try {
+      const data = await searchDevelopers(value)
+
+      const results = data.map(d => ({
+        ...d,
+        id: d.id ?? d.idDeveloper ?? d.id_developer,
+        name: d.name ?? d.fullName ?? d.full_name,
+        skills: (d.skills || []).map(skill =>
+          typeof skill === 'string' ? skill : skill.name
+        )
+      }))
+
+      setDevelopers(results)
+    } catch (err) {
+      setError('Impossible de charger les développeurs.')
+      setDevelopers([])
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="container page-shell">
@@ -27,16 +56,17 @@ export default function DevelopersPage() {
 
       <div className="search-field standalone-search">
         <Search size={18} />
+
         <input
           value={keyword}
-          onChange={e => setKeyword(e.target.value)}
+          onChange={e => handleSearch(e.target.value)}
           placeholder="Rechercher par nom, compétence ou technologie..."
         />
 
         {keyword && (
           <button
             type="button"
-            onClick={() => setKeyword('')}
+            onClick={() => handleSearch('')}
             title="Effacer la recherche"
           >
             <RotateCcw size={16} />
@@ -45,17 +75,25 @@ export default function DevelopersPage() {
       </div>
 
       <div className="results-line">
-        <strong>{filtered.length} profils</strong>
-        <span>Profils de démonstration</span>
+        <strong>{developers.length} profils</strong>
+        <span>Résultats de recherche</span>
       </div>
 
-      <div className="developers-grid">
-        {filtered.map(d => (
-          <DeveloperCard key={d.id} developer={d} />
-        ))}
-      </div>
+      {loading && <p>Recherche en cours...</p>}
 
-      {!filtered.length && (
+      {error && (
+        <div className="empty-state">{error}</div>
+      )}
+
+      {!loading && !error && (
+        <div className="developers-grid">
+          {developers.map(d => (
+            <DeveloperCard key={d.id} developer={d} />
+          ))}
+        </div>
+      )}
+
+      {!loading && !error && keyword && developers.length === 0 && (
         <div className="empty-state">
           Aucun profil ne correspond à votre recherche.
         </div>
