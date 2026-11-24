@@ -23,7 +23,7 @@ export default function OfferCard({ offer }) {
 
         <div className="offer-title-wrap">
           <Link
-            to={`/offers/${offer.id_offer}`}
+            to={`/offers/${offer.id_offer ?? offer.id}`}
             className="offer-title"
           >
             {offer.title}
@@ -82,7 +82,7 @@ export default function OfferCard({ offer }) {
         </span>
 
         <Link
-          to={`/offers/${offer.id_offer}`}
+          to={`/offers/${offer.id_offer ?? offer.id}`}
           className="btn btn-dark btn-apply"
         >
           Voir l'offre

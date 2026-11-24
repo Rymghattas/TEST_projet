@@ -16,31 +16,29 @@ export default function OfferDetailsPage() {
   const { id } = useParams()
   const offer = offers.find(o => o.id === Number(id))
 
-  const [applied, setApplied] = useState(false)
+  const [application, setApplication] = useState(null)
   const [coverLetter, setCoverLetter] = useState('')
   const [error, setError] = useState('')
 
-  function handleSubmit(e) {
-    e.preventDefault()
+    function handleSubmit(e) {
+      e.preventDefault()
 
-    if (!coverLetter.trim()) {
-      setError('Veuillez écrire votre lettre de motivation.')
-      return
+      if (!coverLetter.trim()) {
+        setError('Veuillez écrire votre lettre de motivation.')
+        return
+      }
+      const newApplication = {
+        id_offer: offer.id,
+        cover_letter: coverLetter,
+        status: 'En attente',
+        application_date: new Date().toISOString()
+      }
+
+      setApplication(newApplication)
+      console.log('Nouvelle candidature :', newApplication)
+
+      setError('')
     }
-
-    const application = {
-      id_offer: offer.id,
-      cover_letter: coverLetter,
-      status: 'Pending',
-      application_date: new Date().toISOString()
-    }
-
-    console.log('Nouvelle candidature :', application)
-
-    setApplied(true)
-    setError('')
-  }
-
   if (!offer) {
     return (
       <div className="container page-shell empty-state">
@@ -109,7 +107,7 @@ export default function OfferDetailsPage() {
 
         <h3>Cette opportunité vous intéresse ?</h3>
 
-        {!applied ? (
+      {!application ? (
           <form onSubmit={handleSubmit}>
             <p>Envoyez votre lettre de motivation.</p>
 
@@ -142,7 +140,7 @@ export default function OfferDetailsPage() {
             <CheckCircle2 size={17} />
             Candidature enregistrée !
             <br />
-            <strong>Statut : En attente</strong>
+           <strong>Statut : {application.status}</strong>
           </div>
         )}
 
