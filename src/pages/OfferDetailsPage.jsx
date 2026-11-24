@@ -113,24 +113,29 @@ export default function OfferDetailsPage() {
           <form onSubmit={handleSubmit}>
             <p>Envoyez votre lettre de motivation.</p>
 
-            <textarea
-              value={coverLetter}
-              onChange={e => setCoverLetter(e.target.value)}
-              placeholder="Écrivez votre lettre de motivation..."
-              rows={6}
-              required
-            />
+           <textarea
+            value={coverLetter}
+            onChange={e => setCoverLetter(e.target.value)}
+            placeholder="Écrivez votre lettre de motivation..."
+            rows={6}
+            required
+          />
 
-            {error && (
-              <p className="error-message">{error}</p>
-            )}
+          <p className="character-count">
+            {coverLetter.length} caractères
+          </p>
 
-            <button
-              type="submit"
-              className="btn btn-primary full-width"
-            >
-              Postuler maintenant
-            </button>
+          {error && (
+            <p className="error-message">{error}</p>
+          )}
+
+          <button
+            type="submit"
+            className="btn btn-primary full-width"
+            disabled={!coverLetter.trim()}
+          >
+            Postuler
+          </button>
           </form>
         ) : (
           <div className="success-note">
