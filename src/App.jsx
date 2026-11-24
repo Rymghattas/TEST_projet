@@ -11,6 +11,8 @@ import ProfilPublicOrganisationPage from './pages/OrganisationPubliqueP'
 import ApplicationsPage from './pages/ApplicationsPage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import { ForgotPasswordPage, LoginPage, RegisterPage } from './pages/AuthPages'
+import OrganizationApplicationsPage from './pages/OrganizationApplicationsPage'
+
 
 import MyProfilePage from './pages/MyProfilePage'
 import OrganizationProfile from './pages/OrganizationProfile'
@@ -36,6 +38,7 @@ export default function App() {
         <Route path="/organization/profile" element={<OrganizationProfilePage/>}/>
         <Route path="/organizations/:id" element={<ProfilPublicOrganisationPage/>}/>
         <Route path="/applications/received" element={<ApplicationsPage/>}/>
+        <Route path="/organization/applications" element={<OrganizationApplicationsPage/>}/>
         <Route path="/login" element={<LoginPage/>}/>
         <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
         <Route path="/register" element={<RegisterPage/>}/>

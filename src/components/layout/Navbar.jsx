@@ -18,6 +18,9 @@ export default function Navbar() {
           <NavLink to="/" end onClick={() => setOpen(false)}>Accueil</NavLink>
           <NavLink to="/offers" onClick={() => setOpen(false)}>Opportunités <ChevronDown size={13}/></NavLink>
           <NavLink to="/developers" onClick={() => setOpen(false)}>Développeurs <ChevronDown size={13}/></NavLink>
+          <NavLink to="/organization/applications">
+            Candidatures reçues
+          </NavLink>
           <a href="#about" onClick={() => setOpen(false)}>À propos</a>
           <a href="#footer" onClick={() => setOpen(false)}>Contact</a>
         </nav>
